@@ -19,7 +19,13 @@ local function recolorCarpet(room)
     local color = CarpetColors[math.random(#CarpetColors)]
 
     for _, v in ipairs(room:GetDescendants()) do
-        if v:IsA("Model") and string.find(string.lower(v.Name), "carpet") then
+        local name = string.lower(v.Name)
+
+        if string.find(name, "rug") or string.find(name, "carpet") then
+            if v:IsA("BasePart") then
+                v.Color = color
+            end
+
             for _, obj in ipairs(v:GetDescendants()) do
                 if obj:IsA("BasePart") then
                     obj.Color = color
@@ -37,6 +43,7 @@ workspace.CurrentRooms.ChildAdded:Connect(function(room)
     task.wait(0.1)
     recolorCarpet(room)
 end)
+
    
 
 local function applyColor(model, color)
@@ -94,8 +101,8 @@ end
 -- Seek → Red (including eyes)
 if model.Name == "SeekMoving"
 or model.Name == "SeekMovingNewClone"
-or model.Name == "SeekEyes"
-or model.Name == "_SeekEyes" then
+or model.Name == "Eye"
+or model.Name == "Eyes" then
 
     applyColor(model, RED)
 
@@ -123,7 +130,9 @@ local Entities = {
 
 function() -- A90
 
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/idkman60093/Custom-Entity/refs/heads/main/A-90-Nightmare-Mode"))()
+    require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules.A90)
+    (require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game), 
+    workspace.CurrentRooms[game.Players.LocalPlayer:GetAttribute("CurrentRoom")])
 
     
 
@@ -650,24 +659,25 @@ function() -- Rebound Killable
 
 
 	for Room = game:GetService("ReplicatedStorage").GameData.LatestRoom.Value, 0, -1 do
-
-		local MainRoom = workspace.CurrentRooms:FindFirstChild(Room)
-
-		if MainRoom then
-
-			local tween = game:GetService("TweenService"):Create(MainEntity.Rebound, TweenInfo.new(2), {CFrame = MainRoom:FindFirstChild("RoomEntrance").CFrame + Vector3.new(0, 0.6, 0)})				
-
-			tween:Play()
-
-			tween.Completed:Wait()
-
-
-
-			task.wait(2)
-
-		end
-
-	end
+        local MainRoom = workspace.CurrentRooms:FindFirstChild(tostring(Room))
+    
+        if MainRoom then
+            local RoomEntrance = MainRoom:FindFirstChild("RoomEntrance")
+    
+            if RoomEntrance then
+                local tween = game:GetService("TweenService"):Create(
+                    MainEntity.Rebound,
+                    TweenInfo.new(2),
+                    {CFrame = RoomEntrance.CFrame + Vector3.new(0, 0.6, 0)}
+                )
+    
+                tween:Play()
+                tween.Completed:Wait()
+    
+                task.wait(2)
+            end
+        end
+    end
 
 
 
