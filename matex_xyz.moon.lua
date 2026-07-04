@@ -112,15 +112,6 @@ workspace.DescendantAdded:Connect(hookEntity)
 
 local Entities = {
 
-function() -- A90
-
-    require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules.A90)
-    (require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game), 
-    workspace.CurrentRooms[game.Players.LocalPlayer:GetAttribute("CurrentRoom")])
-
-    
-
-end,
 
 function() -- Depth Killable
 
