@@ -3,16 +3,17 @@
 local spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Entity%20Spawner/V2/Source.lua"))()
 
 local YELLOW = Color3.fromRGB(255, 255, 0)
-local RED = Color3.fromRGB(255, 0, 0)
+local ORANGE = Color3.fromRGB(255, 128, 0)
 
+-- Very dark carpet colors
 local CarpetColors = {
-    Color3.fromRGB(255, 0, 0),
-    Color3.fromRGB(0, 255, 0),
-    Color3.fromRGB(0, 0, 255),
-    Color3.fromRGB(255, 255, 0),
-    Color3.fromRGB(255, 0, 255),
-    Color3.fromRGB(0, 255, 255),
-    Color3.fromRGB(255, 128, 0),
+    Color3.fromRGB(20, 0, 0),
+    Color3.fromRGB(0, 20, 0),
+    Color3.fromRGB(0, 0, 20),
+    Color3.fromRGB(20, 20, 0),
+    Color3.fromRGB(20, 0, 20),
+    Color3.fromRGB(0, 20, 20),
+    Color3.fromRGB(20, 10, 0),
 }
 
 local function recolorCarpet(room)
@@ -44,86 +45,69 @@ workspace.CurrentRooms.ChildAdded:Connect(function(room)
     recolorCarpet(room)
 end)
 
-   
-
 local function applyColor(model, color)
-	for _, v in ipairs(model:GetDescendants()) do
-		if v:IsA("BasePart") then
-			v.Color = color
+    for _, v in ipairs(model:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Color = color
 
-		elseif v:IsA("Decal") then
-			v.Color3 = color
+        elseif v:IsA("Decal") then
+            v.Color3 = color
 
-		elseif v:IsA("Texture") then
-			v.Color = color
+        elseif v:IsA("Texture") then
+            v.Color = color
 
-		elseif v:IsA("ParticleEmitter") then
-			v.Color = ColorSequence.new(color)
+        elseif v:IsA("ParticleEmitter") then
+            v.Color = ColorSequence.new(color)
 
-		elseif v:IsA("Beam") or v:IsA("Trail") then
-			v.Color = ColorSequence.new(color)
+        elseif v:IsA("Beam") or v:IsA("Trail") then
+            v.Color = ColorSequence.new(color)
 
-		elseif v:IsA("Highlight") then
-			v.FillColor = color
-			v.OutlineColor = color
+        elseif v:IsA("Highlight") then
+            v.FillColor = color
+            v.OutlineColor = color
 
-		elseif v:IsA("ImageLabel") or v:IsA("ImageButton") then
-			v.ImageColor3 = color
-		end
-	end
-end 
-                                                                                                                                                            local function hookEntity(model)
-
-if not model:IsA("Model") then return end
-
-
-
--- Screech → Yellow
-
-if model.Name == "Screech" or model.Name == "_Screech" then
-
-	applyColor(model, YELLOW)
-
-
-
-	model.DescendantAdded:Connect(function(v)
-
-		task.wait()
-
-		applyColor(model, YELLOW)
-
-	end)
-
+        elseif v:IsA("ImageLabel") or v:IsA("ImageButton") then
+            v.ImageColor3 = color
+        end
+    end
 end
 
+local function hookEntity(model)
+    if not model:IsA("Model") then
+        return
+    end
 
+    -- Screech → Yellow
+    if model.Name == "Screech" or model.Name == "_Screech" then
+        applyColor(model, YELLOW)
 
--- Seek → Red (including eyes)
-if model.Name == "SeekMoving"
-or model.Name == "SeekMovingNewClone"
-or model.Name == "Eye"
-or model.Name == "Eyes" then
+        model.DescendantAdded:Connect(function()
+            task.wait()
+            applyColor(model, YELLOW)
+        end)
+    end
 
-    applyColor(model, RED)
+    -- Seek + Eyes → Orange
+    if model.Name == "SeekMoving"
+    or model.Name == "SeekMovingNewClone"
+    or model.Name == "Eye"
+    or model.Name == "Eyes" then
 
-    model.DescendantAdded:Connect(function()
-        task.wait()
-        applyColor(model, RED)
-    end)
+        applyColor(model, ORANGE)
+
+        model.DescendantAdded:Connect(function()
+            task.wait()
+            applyColor(model, ORANGE)
+        end)
+    end
 end
 
-end
-
--- existing entities
-
+-- Existing entities
 for _, v in ipairs(workspace:GetChildren()) do
-
-hookEntity(v)
-
+    hookEntity(v)
 end
 
--- future spawns
-
+-- Future entities
 workspace.DescendantAdded:Connect(hookEntity)
 
 local Entities = {
@@ -138,7 +122,17 @@ function() -- A90
 
 end,
 
+function() -- DREAD
 
+local main_game = require(game:GetService("Players").LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game)
+        require(game:GetService("Players").LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules.Dread)(main_game)
+        task.wait(1) local main_game = require(game:GetService("Players").LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game)
+        require(game:GetService("Players").LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Jumpscares.Death)(main_game)
+        game.Players.LocalPlayer.Character.Humanoid.Health = game.Players.LocalPlayer.Character.Humanoid.Health - 200
+
+    
+
+end,
 
 function() -- Depth Killable
 
@@ -240,13 +234,23 @@ function() -- Stupid Horse Killable
 
         },
 
-        Lights = {
+       Lights = {
 
             Flicker = {Enabled = true, Duration = 1},
 
             Shatter = true,
 
             Repair = false
+
+        },
+
+        CameraShake = {
+
+            Enabled = true,
+
+            Range = 100,
+
+            Values = {1.5,20,0.1,1}
 
         },
 
@@ -260,6 +264,20 @@ function() -- Stupid Horse Killable
 
         },
 
+        Rebounding = {
+
+            Enabled = false,
+
+            Type = "Ambush",
+
+            Min = 1,
+
+            Max = 1,
+
+            Delay = 2
+
+        },
+
         Damage = {
 
             Enabled = true,
@@ -267,6 +285,18 @@ function() -- Stupid Horse Killable
             Range = 40,
 
             Amount = 125
+
+        },
+
+        Crucifixion = {
+
+            Enabled = true,
+
+            Range = 40,
+
+            Resist = false,
+
+            Break = true
 
         }
 
@@ -290,9 +320,9 @@ function() -- OG Ambush Killable
 
         },
 
-        Lights = {
+       Lights = {
 
-            Flicker = {Enabled = true, Duration = 2},
+            Flicker = {Enabled = true, Duration = 1},
 
             Shatter = true,
 
@@ -300,9 +330,19 @@ function() -- OG Ambush Killable
 
         },
 
+        CameraShake = {
+
+            Enabled = true,
+
+            Range = 100,
+
+            Values = {1.5,20,0.1,1}
+
+        },
+
         Movement = {
 
-            Speed = 150,
+            Speed = 100,
 
             Delay = 2,
 
@@ -318,7 +358,7 @@ function() -- OG Ambush Killable
 
             Min = 1,
 
-            Max = 5,
+            Max = 1,
 
             Delay = 2
 
@@ -331,6 +371,18 @@ function() -- OG Ambush Killable
             Range = 40,
 
             Amount = 125
+
+        },
+
+        Crucifixion = {
+
+            Enabled = true,
+
+            Range = 40,
+
+            Resist = false,
+
+            Break = true
 
         }
 
@@ -687,206 +739,6 @@ end,
 
 
 
-function() -- Ripper
-
-    local TweenService = game:GetService("TweenService")
-
-    local Players = game:GetService("Players")
-
-    local Lighting = game:GetService("Lighting")
-
-
-
-    local EFFECT_TIME = 10
-
-    local RED = Color3.fromRGB(255,0,0)
-
-
-
-    local player = Players.LocalPlayer
-
-    local currentRoomNumber = game.ReplicatedStorage.GameData.LatestRoom.Value
-
-    local currentRoom = workspace.CurrentRooms:FindFirstChild(tostring(currentRoomNumber))
-
-
-
-    if not currentRoom then
-
-        return
-
-    end
-
-
-
-    local Sound = Instance.new("Sound")
-
-    Sound.SoundId = "rbxassetid://6963538865"
-
-    Sound.Volume = 10
-
-    Sound.Parent = workspace
-
-    Sound:Play()
-
-
-
-    game:GetService("Debris"):AddItem(Sound, 15)
-
-
-
-    local Character = player.Character
-
-
-
-    if Character then
-
-        local Humanoid = Character:FindFirstChildWhichIsA("Humanoid")
-
-
-
-        if Humanoid then
-
-            Humanoid:TakeDamage(5)
-
-        end
-
-    end
-
-
-
-    local OldAmbient = Lighting.Ambient
-
-    local OldOutdoorAmbient = Lighting.OutdoorAmbient
-
-
-
-    Lighting.Ambient = RED
-
-    Lighting.OutdoorAmbient = RED
-
-
-
-    local OriginalColors = {}
-
-
-
-    for _, obj in ipairs(currentRoom:GetDescendants()) do
-
-        if obj:IsA("BasePart") then
-
-            OriginalColors[obj] = obj.Color
-
-
-
-            obj.Color = RED
-
-
-
-            local light = Instance.new("PointLight")
-
-            light.Name = "RedFlashLight"
-
-            light.Color = RED
-
-            light.Range = 25
-
-            light.Brightness = 0
-
-            light.Shadows = true
-
-            light.Parent = obj
-
-
-
-            task.spawn(function()
-
-                while light.Parent do
-
-                    TweenService:Create(
-
-                        light,
-
-                        TweenInfo.new(0.4, Enum.EasingStyle.Sine),
-
-                        {Brightness = 5}
-
-                    ):Play()
-
-
-
-                    task.wait(0.4)
-
-
-
-                    if not light.Parent then
-
-                        break
-
-                    end
-
-
-
-                    TweenService:Create(
-
-                        light,
-
-                        TweenInfo.new(0.4, Enum.EasingStyle.Sine),
-
-                        {Brightness = 0}
-
-                    ):Play()
-
-
-
-                    task.wait(0.4)
-
-                end
-
-            end)
-
-        end
-
-    end
-
-
-
-    task.wait(EFFECT_TIME)
-
-
-
-    for Part, Color in pairs(OriginalColors) do
-
-        if Part and Part.Parent then
-
-            Part.Color = Color
-
-
-
-            local Flash = Part:FindFirstChild("RedFlashLight")
-
-
-
-            if Flash then
-
-                Flash:Destroy()
-
-            end
-
-        end
-
-    end
-
-
-
-    Lighting.Ambient = OldAmbient
-
-    Lighting.OutdoorAmbient = OldOutdoorAmbient
-
-end,
-
-
-
 function() -- OG A60
 
     local spawner = loadstring(game:HttpGet(
@@ -953,7 +805,7 @@ function() -- OG A60
 
         Rebounding = {
 
-            Enabled = true,
+            Enabled = false,
 
             Type = "Rush",
 
@@ -1013,3 +865,4 @@ coroutine.wrap(function()
         SpawnRandomEntity()
     end
 end)()
+
